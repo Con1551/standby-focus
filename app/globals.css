@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --font-inter: var(--font-inter);
+  --font-hand: var(--font-hand);
+}
+
+/* HIDE DEV OVERLAYS */
+#nextjs-portal, [nextjs-portal], #next-route-announcer { display: none !important; }
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+/* Animation for the Notes Tab */
+@keyframes pulse-gentle {
+  0%, 100% { transform: translateY(-50%) scale(1); }
+  50% { transform: translateY(-50%) scale(1.05); background-color: rgba(255, 255, 255, 0.9); }
+}
+.animate-notes { animation: pulse-gentle 3s ease-in-out infinite; }
