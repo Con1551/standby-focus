@@ -1,19 +1,10 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 
-// Using a simple style object so Tailwind doesn't break on the network
-const themes = {
-  marshmallow: { bg: "#FDF6F0", accent: "#FFB7B2", text: "#6D5D6E" },
-  matcha: { bg: "#F0F4EF", accent: "#B5EAD7", text: "#4A5D4E" },
-  berry: { bg: "#F9F1F6", accent: "#C7CEEA", text: "#5D5D81" },
-  honey: { bg: "#FFF9E5", accent: "#FFDAC1", text: "#855D44" }
-};
-
 export default function PomoNook() {
   const [mounted, setMounted] = useState(false);
   const [seconds, setSeconds] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
-  const [activeTheme, setActiveTheme] = useState('marshmallow');
   const [notes, setNotes] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -31,46 +22,37 @@ export default function PomoNook() {
   }, [isRunning, seconds]);
 
   // If the phone isn't ready, show a loading color instead of a blank white screen
-  if (!mounted) return <div style={{ backgroundColor: '#FDF6F0', height: '100vh' }} />;
+  if (!mounted) return <div className="bg-[#f4f1ea] h-screen w-screen" />;
 
-  const theme = themes[activeTheme];
   const mins = Math.floor(seconds / 60);
   const secs = (seconds % 60).toString().padStart(2, '0');
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, backgroundColor: theme.bg, color: theme.text,
-      fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden'
-    }}>
+    <div className="fixed inset-0 bg-[#f4f1ea] text-[#3a3532] font-sans flex flex-col overflow-hidden">
       {/* 1. TOP NAV */}
-      <nav style={{ padding: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: '900', margin: 0 }}>🍅 pomo.nook</h1>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          {Object.keys(themes).map(t => (
-            <button key={t} onClick={() => setActiveTheme(t)} style={{
-              width: '30px', height: '30px', borderRadius: '50%', border: '2px solid white',
-              backgroundColor: themes[t].accent, cursor: 'pointer'
-            }} />
-          ))}
-        </div>
+      <nav className="p-6 md:p-10 flex justify-between items-center">
+        <h1 className="text-2xl md:text-3xl font-black m-0">🍅 pomo.nook</h1>
       </nav>
 
-      {/* 2. CENTER CLOCK (MASSIVE) */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ backgroundColor: 'white', padding: '60px', borderRadius: '80px', textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '10rem', fontWeight: '900', marginBottom: '30px', fontFamily: 'monospace' }}>
+      {/* 2. CENTER CLOCK */}
+      <div className="flex-1 flex flex-col justify-center items-center px-4">
+        <div className="bg-white p-8 md:p-16 rounded-[3rem] md:rounded-[5rem] text-center shadow-[0_20px_50px_rgba(0,0,0,0.05)] w-full max-w-2xl">
+          <div className="text-6xl sm:text-7xl md:text-[10rem] font-black mb-8 font-mono leading-none tracking-tighter">
             {mins}:{secs}
           </div>
-          <div style={{ display: 'flex', gap: '20px' }}>
+          <div className="flex justify-center gap-3 md:gap-4">
             <button 
               onClick={() => setIsRunning(!isRunning)}
-              style={{ backgroundColor: theme.accent, color: 'white', border: 'none', padding: '25px 60px', borderRadius: '50px', fontSize: '1.8rem', fontWeight: '900', cursor: 'pointer' }}
+              className="bg-[#8c7b6d] text-white border-none py-4 px-8 md:py-6 md:px-16 rounded-full text-lg md:text-3xl font-black cursor-pointer hover:bg-[#7a6b5e] transition-colors"
             >
               {isRunning ? 'PAUSE' : 'START'}
             </button>
             <button 
-              onClick={() => setSeconds(25 * 60)}
-              style={{ background: '#eee', border: 'none', padding: '25px 30px', borderRadius: '50px', fontSize: '1.8rem', cursor: 'pointer' }}
+              onClick={() => {
+                setSeconds(25 * 60);
+                setIsRunning(false);
+              }}
+              className="bg-gray-200 border-none py-4 px-6 md:py-6 md:px-8 rounded-full text-lg md:text-3xl cursor-pointer hover:bg-gray-300 transition-colors"
             >
               ↺
             </button>
@@ -78,18 +60,34 @@ export default function PomoNook() {
         </div>
       </div>
 
+      {/* OVERLAY BACKDROP FOR MOBILE */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 z-40"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* 3. NOTES SIDEBAR */}
-      <div style={{
-        position: 'fixed', right: 0, top: 0, bottom: 0, width: '300px',
-        backgroundColor: 'white', transform: isSidebarOpen ? 'translateX(0)' : 'translateX(100%)',
-        transition: '0.4s ease', boxShadow: '-10px 0 30px rgba(0,0,0,0.05)', padding: '40px'
-      }}>
-        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{ position: 'absolute', left: '-50px', top: '50%', height: '100px', width: '50px', background: 'white', border: 'none', borderRadius: '20px 0 0 20px' }}>
+      <div className={`fixed right-0 top-0 bottom-0 w-[85vw] sm:w-[350px] bg-white z-50 transform transition-transform duration-300 ease-in-out shadow-[-10px_0_30px_rgba(0,0,0,0.05)] p-6 md:p-10 flex flex-col ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="absolute -left-12 top-1/2 -translate-y-1/2 h-24 w-12 bg-white border-none rounded-l-2xl shadow-[-5px_0_10px_rgba(0,0,0,0.05)] flex items-center justify-center cursor-pointer text-xl"
+        >
           {isSidebarOpen ? '→' : '←'}
         </button>
-        <h2 style={{ fontWeight: '900' }}>Notes</h2>
-        <button onClick={() => setNotes([...notes, { id: Date.now() }])} style={{ width: '100%', padding: '10px', background: theme.accent, color: 'white', border: 'none', borderRadius: '10px', fontWeight: 'bold' }}>+ New Note</button>
-        {notes.map(n => <div key={n.id} style={{ background: '#FFF9E5', padding: '10px', marginTop: '10px', minHeight: '100px', borderRadius: '5px' }} />)}
+        <h2 className="font-black text-2xl mb-6">Notes</h2>
+        <button
+          onClick={() => setNotes([...notes, { id: Date.now() }])}
+          className="w-full p-3 bg-[#8c7b6d] text-white border-none rounded-xl font-bold cursor-pointer mb-4 hover:bg-[#7a6b5e] transition-colors"
+        >
+          + New Note
+        </button>
+        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+          {notes.map(n => (
+            <div key={n.id} className="bg-[#f4f1ea] p-4 mt-4 min-h-[100px] rounded-lg shadow-sm" />
+          ))}
+        </div>
       </div>
     </div>
   );
